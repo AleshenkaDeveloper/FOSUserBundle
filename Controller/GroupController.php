@@ -11,22 +11,18 @@
 
 namespace FOS\UserBundle\Controller;
 
+use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Event\FilterGroupResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseGroupEvent;
 use FOS\UserBundle\Event\GroupEvent;
-use FOS\UserBundle\Form\Factory\FactoryInterface;
-use FOS\UserBundle\FOSUserEvents;
-use FOS\UserBundle\Model\GroupInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * RESTful controller managing group CRUD.
+ * RESTful controller managing group CRUD
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
  * @author Christophe Coevoet <stof@notk.org>
@@ -34,46 +30,37 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class GroupController extends Controller
 {
     /**
-     * Show all groups.
+     * Show all groups
      */
     public function listAction()
     {
         $groups = $this->get('fos_user.group_manager')->findGroups();
 
         return $this->render('FOSUserBundle:Group:list.html.twig', array(
-            'groups' => $groups,
+            'groups' => $groups
         ));
     }
 
     /**
-     * Show one group.
-     *
-     * @param string $groupName
-     *
-     * @return Response
+     * Show one group
      */
     public function showAction($groupName)
     {
         $group = $this->findGroupBy('name', $groupName);
 
         return $this->render('FOSUserBundle:Group:show.html.twig', array(
-            'group' => $group,
+            'group' => $group
         ));
     }
 
     /**
-     * Edit one group, show the edit form.
-     *
-     * @param Request $request
-     * @param string  $groupName
-     *
-     * @return Response
+     * Edit one group, show the edit form
      */
     public function editAction(Request $request, $groupName)
     {
         $group = $this->findGroupBy('name', $groupName);
 
-        /** @var $dispatcher EventDispatcherInterface */
+        /** @var $dispatcher \Symfony\Component\EventDispatcher\EventDispatcherInterface */
         $dispatcher = $this->get('event_dispatcher');
 
         $event = new GetResponseGroupEvent($group, $request);
@@ -83,7 +70,7 @@ class GroupController extends Controller
             return $event->getResponse();
         }
 
-        /** @var $formFactory FactoryInterface */
+        /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
         $formFactory = $this->get('fos_user.group.form.factory');
 
         $form = $formFactory->createForm();
@@ -111,17 +98,13 @@ class GroupController extends Controller
         }
 
         return $this->render('FOSUserBundle:Group:edit.html.twig', array(
-            'form' => $form->createView(),
-            'group_name' => $group->getName(),
+            'form'      => $form->createview(),
+            'group_name'  => $group->getName(),
         ));
     }
 
     /**
-     * Show the new form.
-     *
-     * @param Request $request
-     *
-     * @return Response
+     * Show the new form
      */
     public function newAction(Request $request)
     {
@@ -158,17 +141,12 @@ class GroupController extends Controller
         }
 
         return $this->render('FOSUserBundle:Group:new.html.twig', array(
-            'form' => $form->createView(),
+            'form' => $form->createview(),
         ));
     }
 
     /**
-     * Delete one group.
-     *
-     * @param Request $request
-     * @param string  $groupName
-     *
-     * @return RedirectResponse
+     * Delete one group
      */
     public function deleteAction(Request $request, $groupName)
     {
@@ -185,14 +163,13 @@ class GroupController extends Controller
     }
 
     /**
-     * Find a group by a specific property.
+     * Find a group by a specific property
      *
      * @param string $key   property name
      * @param mixed  $value property value
      *
-     * @throws NotFoundHttpException if user does not exist
-     *
-     * @return GroupInterface
+     * @throws NotFoundHttpException                if user does not exist
+     * @return \FOS\UserBundle\Model\GroupInterface
      */
     protected function findGroupBy($key, $value)
     {

@@ -11,12 +11,12 @@
 
 namespace FOS\UserBundle\Security;
 
-use FOS\UserBundle\Model\UserInterface;
-use FOS\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface as SecurityUserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use FOS\UserBundle\Model\UserInterface;
+use FOS\UserBundle\Model\UserManagerInterface;
 
 class UserProvider implements UserProviderInterface
 {
@@ -36,7 +36,7 @@ class UserProvider implements UserProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadUserByUsername($username)
     {
@@ -50,7 +50,7 @@ class UserProvider implements UserProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function refreshUser(SecurityUserInterface $user)
     {
@@ -70,7 +70,7 @@ class UserProvider implements UserProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function supportsClass($class)
     {

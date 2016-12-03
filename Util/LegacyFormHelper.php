@@ -18,9 +18,6 @@ namespace FOS\UserBundle\Util;
  */
 final class LegacyFormHelper
 {
-    /**
-     * @var string[]
-     */
     private static $map = array(
         'FOS\UserBundle\Form\Type\ChangePasswordFormType' => 'fos_user_change_password',
         'FOS\UserBundle\Form\Type\GroupFormType' => 'fos_user_group',
@@ -33,11 +30,6 @@ final class LegacyFormHelper
         'Symfony\Component\Form\Extension\Core\Type\TextType' => 'text',
     );
 
-    /**
-     * @param $class
-     *
-     * @return mixed
-     */
     public static function getType($class)
     {
         if (!self::isLegacy()) {
@@ -51,17 +43,11 @@ final class LegacyFormHelper
         return self::$map[$class];
     }
 
-    /**
-     * @return bool
-     */
     public static function isLegacy()
     {
         return !method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix');
     }
 
-    /**
-     * LegacyFormHelper constructor.
-     */
     private function __construct()
     {
     }

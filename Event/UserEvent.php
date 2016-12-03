@@ -17,23 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UserEvent extends Event
 {
-    /**
-     * @var null|Request
-     */
-    protected $request;
+    private $request;
+    private $user;
 
-    /**
-     * @var UserInterface
-     */
-    protected $user;
-
-    /**
-     * UserEvent constructor.
-     *
-     * @param UserInterface $user
-     * @param Request|null  $request
-     */
-    public function __construct(UserInterface $user, Request $request = null)
+    public function __construct(UserInterface $user, Request $request)
     {
         $this->user = $user;
         $this->request = $request;

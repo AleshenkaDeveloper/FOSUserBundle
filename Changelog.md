@@ -1,32 +1,6 @@
 Changelog
 =========
 
-### 2.0.0-beta1 (2016-11-29)
-
-* Dropped Symfony < 2.7 support.
-* Dropped PHP < 5.5 support.
-* Exclude tests from autoloader.
-* Allow to use POST for logout.
-* Fix UserPassword constraint validation groups.
-* Harmonized email detection in `UserManager`.
-* Added unique index for `confirmation_token` field.
-* Added Kyrgyz translation files.
-* Added user manipulator events.
-* Replaced `checkPostAuth` by `checkPreAuth` in `AuthenticationListener`.
-* [BC break] Method `ResettingController::getObfuscatedEmail` has been removed.
-* [BC break] Renamed templates to underscore case.
-* [BC break] Removed `UserManager::refreshUser`.
-* [BC break] Removed `UserManager::loadUserByUsername`.
-* [BC break] Removed `UserManager::supportsClass`.
-* [BC break] Removed unused properties `expired` and `credentialsExpired` including corresponding methods.
-* [BC break] The signature of the `Initializer` constructor has changed.
-* [BC break] The signature of the `LoginManager` constructor has changed.
-* [BC break] The signature of the `UserListener` constructor has changed.
-* [BC break] The signature of the `UserManager` constructor has changed.
-* [BC break] The translation key `resetting.request.invalid_username` has been removed.
-* [BC break] The propel dependency was dropped.
-* [BC break] The `salt` field of the `User` class is now nullable.
-
 ### 2.0.0-alpha3 (2015-09-15)
 
 * Reverted the removed of the `expired` and `credentialsExpired` properties as the BC break could lead to corrupted objects being created if server sessions are not cleared when upgrading the bundle.
@@ -55,22 +29,6 @@ Changelog
 * Removed all form handlers.
 * [BC break] Changed Datetime properties of default User entity that were nullable to default to null when no value supplied.
 * [BC break] Updated schema.xml for Propel BaseUser class to allow nullable and typehint accordingly.
-
-### 1.3.8 (xxxx-xx-xx)
-
-* Use `random_bytes` to generate tokens
-
-### 1.3.7 (2016-11-22)
-
-* Fixed some yaml errors in translation files
-* Fixed bad credentials translations
-* Fixed canonicalizer with illegal chars
-* Fixed deprecated routing configuration
-* Fixed class name check in `UserProvider::refreshUser()`
-* Updated several translation files
-* Removed colons from translation files
-* Updated several documentation examples
-* Converted documentation to rst format
 
 ### 1.3.6 (2015-06-01)
 

@@ -11,12 +11,12 @@
 
 namespace FOS\UserBundle\Command;
 
-use FOS\UserBundle\Util\UserManipulator;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use FOS\UserBundle\Util\UserManipulator;
 use Symfony\Component\Console\Question\Question;
 
 /**
@@ -25,7 +25,7 @@ use Symfony\Component\Console\Question\Question;
 abstract class RoleCommand extends ContainerAwareCommand
 {
     /**
-     * {@inheritdoc}
+     * @see Command
      */
     protected function configure()
     {
@@ -38,7 +38,7 @@ abstract class RoleCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritdoc}
+     * @see Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -64,21 +64,29 @@ abstract class RoleCommand extends ContainerAwareCommand
      * @param UserManipulator $manipulator
      * @param OutputInterface $output
      * @param string          $username
-     * @param bool            $super
+     * @param boolean         $super
      * @param string          $role
+     *
+     * @return void
      */
     abstract protected function executeRoleCommand(UserManipulator $manipulator, OutputInterface $output, $username, $super, $role);
 
     /**
-     * {@inheritdoc}
+     * @see Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->getHelperSet()->has('question')) {
+            $this->legacyInteract($input, $output);
+
+            return;
+        }
+
         $questions = array();
 
         if (!$input->getArgument('username')) {
             $question = new Question('Please choose a username:');
-            $question->setValidator(function ($username) {
+            $question->setValidator(function($username) {
                 if (empty($username)) {
                     throw new \Exception('Username can not be empty');
                 }
@@ -90,7 +98,7 @@ abstract class RoleCommand extends ContainerAwareCommand
 
         if ((true !== $input->getOption('super')) && !$input->getArgument('role')) {
             $question = new Question('Please choose a role:');
-            $question->setValidator(function ($role) {
+            $question->setValidator(function($role) {
                 if (empty($role)) {
                     throw new \Exception('Role can not be empty');
                 }
@@ -103,6 +111,39 @@ abstract class RoleCommand extends ContainerAwareCommand
         foreach ($questions as $name => $question) {
             $answer = $this->getHelper('question')->ask($input, $output, $question);
             $input->setArgument($name, $answer);
+        }
+    }
+
+    // BC for SF <2.5
+    private function legacyInteract(InputInterface $input, OutputInterface $output)
+    {
+        if (!$input->getArgument('username')) {
+            $username = $this->getHelper('dialog')->askAndValidate(
+                $output,
+                'Please choose a username:',
+                function($username) {
+                    if (empty($username)) {
+                        throw new \Exception('Username can not be empty');
+                    }
+
+                    return $username;
+                }
+            );
+            $input->setArgument('username', $username);
+        }
+        if ((true !== $input->getOption('super')) && !$input->getArgument('role')) {
+            $role = $this->getHelper('dialog')->askAndValidate(
+                $output,
+                'Please choose a role:',
+                function($role) {
+                    if (empty($role)) {
+                        throw new \Exception('Role can not be empty');
+                    }
+
+                    return $role;
+                }
+            );
+            $input->setArgument('role', $role);
         }
     }
 }

@@ -34,6 +34,8 @@ interface GroupManagerInterface
      * Deletes a group.
      *
      * @param GroupInterface $group
+     *
+     * @return void
      */
     public function deleteGroup(GroupInterface $group);
 
@@ -73,6 +75,8 @@ interface GroupManagerInterface
      * Updates a group.
      *
      * @param GroupInterface $group
+     *
+     * @return void
      */
     public function updateGroup(GroupInterface $group);
 }

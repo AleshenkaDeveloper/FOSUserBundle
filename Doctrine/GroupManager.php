@@ -12,33 +12,15 @@
 namespace FOS\UserBundle\Doctrine;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository;
 use FOS\UserBundle\Model\GroupInterface;
 use FOS\UserBundle\Model\GroupManager as BaseGroupManager;
 
 class GroupManager extends BaseGroupManager
 {
-    /**
-     * @var ObjectManager
-     */
     protected $objectManager;
-
-    /**
-     * @var string
-     */
     protected $class;
-
-    /**
-     * @var ObjectRepository
-     */
     protected $repository;
 
-    /**
-     * GroupManager constructor.
-     *
-     * @param ObjectManager $om
-     * @param string        $class
-     */
     public function __construct(ObjectManager $om, $class)
     {
         $this->objectManager = $om;
@@ -49,7 +31,7 @@ class GroupManager extends BaseGroupManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function deleteGroup(GroupInterface $group)
     {
@@ -58,7 +40,7 @@ class GroupManager extends BaseGroupManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getClass()
     {
@@ -66,7 +48,7 @@ class GroupManager extends BaseGroupManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findGroupBy(array $criteria)
     {
@@ -74,7 +56,7 @@ class GroupManager extends BaseGroupManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findGroups()
     {
@@ -82,7 +64,10 @@ class GroupManager extends BaseGroupManager
     }
 
     /**
-     * {@inheritdoc}
+     * Updates a group
+     *
+     * @param GroupInterface $group
+     * @param Boolean        $andFlush Whether to flush the changes (default true)
      */
     public function updateGroup(GroupInterface $group, $andFlush = true)
     {

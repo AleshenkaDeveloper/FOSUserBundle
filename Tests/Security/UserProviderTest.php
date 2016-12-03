@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the FOSUserBundle package.
- *
- * (c) FriendsOfSymfony <http://friendsofsymfony.github.com/>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace FOS\UserBundle\Tests\Security;
 
 use FOS\UserBundle\Security\UserProvider;
@@ -27,13 +18,13 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->userManager = $this->getMockBuilder('FOS\UserBundle\Model\UserManagerInterface')->getMock();
+        $this->userManager = $this->getMock('FOS\UserBundle\Model\UserManagerInterface');
         $this->userProvider = new UserProvider($this->userManager);
     }
 
     public function testLoadUserByUsername()
     {
-        $user = $this->getMockBuilder('FOS\UserBundle\Model\UserInterface')->getMock();
+        $user = $this->getMock('FOS\UserBundle\Model\UserInterface');
         $this->userManager->expects($this->once())
             ->method('findUserByUsername')
             ->with('foobar')
@@ -65,7 +56,7 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
             ->method('getId')
             ->will($this->returnValue('123'));
 
-        $refreshedUser = $this->getMockBuilder('FOS\UserBundle\Model\UserInterface')->getMock();
+        $refreshedUser = $this->getMock('FOS\UserBundle\Model\UserInterface');
         $this->userManager->expects($this->once())
             ->method('findUserBy')
             ->with(array('id' => '123'))
@@ -100,7 +91,7 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRefreshInvalidUser()
     {
-        $user = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock();
+        $user = $this->getMock('Symfony\Component\Security\Core\User\UserInterface');
         $this->userManager->expects($this->any())
             ->method('getClass')
             ->will($this->returnValue(get_class($user)));
@@ -113,8 +104,8 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRefreshInvalidUserClass()
     {
-        $user = $this->getMockBuilder('FOS\UserBundle\Model\User')->getMock();
-        $providedUser = $this->getMockBuilder('FOS\UserBundle\Tests\TestUser')->getMock();
+        $user = $this->getMock('FOS\UserBundle\Model\User');
+        $providedUser = $this->getMock('FOS\UserBundle\Tests\TestUser');
 
         $this->userManager->expects($this->atLeastOnce())
             ->method('getClass')

@@ -12,40 +12,29 @@
 namespace FOS\UserBundle\Doctrine;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository;
 use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManager as BaseUserManager;
-use FOS\UserBundle\Util\CanonicalFieldsUpdater;
-use FOS\UserBundle\Util\PasswordUpdaterInterface;
+use FOS\UserBundle\Util\CanonicalizerInterface;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UserManager extends BaseUserManager
 {
-    /**
-     * @var ObjectManager
-     */
     protected $objectManager;
-
-    /**
-     * @var string
-     */
     protected $class;
-
-    /**
-     * @var ObjectRepository
-     */
     protected $repository;
 
     /**
      * Constructor.
      *
-     * @param PasswordUpdaterInterface $passwordUpdater
-     * @param CanonicalFieldsUpdater   $canonicalFieldsUpdater
-     * @param ObjectManager            $om
-     * @param string                   $class
+     * @param EncoderFactoryInterface $encoderFactory
+     * @param CanonicalizerInterface  $usernameCanonicalizer
+     * @param CanonicalizerInterface  $emailCanonicalizer
+     * @param ObjectManager           $om
+     * @param string                  $class
      */
-    public function __construct(PasswordUpdaterInterface $passwordUpdater, CanonicalFieldsUpdater $canonicalFieldsUpdater, ObjectManager $om, $class)
+    public function __construct(EncoderFactoryInterface $encoderFactory, CanonicalizerInterface $usernameCanonicalizer, CanonicalizerInterface $emailCanonicalizer, ObjectManager $om, $class)
     {
-        parent::__construct($passwordUpdater, $canonicalFieldsUpdater);
+        parent::__construct($encoderFactory, $usernameCanonicalizer, $emailCanonicalizer);
 
         $this->objectManager = $om;
         $this->repository = $om->getRepository($class);
@@ -55,7 +44,7 @@ class UserManager extends BaseUserManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function deleteUser(UserInterface $user)
     {
@@ -64,7 +53,7 @@ class UserManager extends BaseUserManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getClass()
     {
@@ -72,7 +61,7 @@ class UserManager extends BaseUserManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findUserBy(array $criteria)
     {
@@ -80,7 +69,7 @@ class UserManager extends BaseUserManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findUsers()
     {
@@ -88,7 +77,7 @@ class UserManager extends BaseUserManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function reloadUser(UserInterface $user)
     {
@@ -96,7 +85,10 @@ class UserManager extends BaseUserManager
     }
 
     /**
-     * {@inheritdoc}
+     * Updates a user.
+     *
+     * @param UserInterface $user
+     * @param Boolean       $andFlush Whether to flush the changes (default true)
      */
     public function updateUser(UserInterface $user, $andFlush = true)
     {

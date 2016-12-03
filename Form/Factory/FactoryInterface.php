@@ -11,12 +11,10 @@
 
 namespace FOS\UserBundle\Form\Factory;
 
-use Symfony\Component\Form\FormInterface;
-
 interface FactoryInterface
 {
     /**
-     * @return FormInterface
+     * @return \Symfony\Component\Form\FormInterface
      */
     public function createForm();
 }

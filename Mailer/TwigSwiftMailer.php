@@ -19,34 +19,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class TwigSwiftMailer implements MailerInterface
 {
-    /**
-     * @var \Swift_Mailer
-     */
     protected $mailer;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
     protected $router;
-
-    /**
-     * @var \Twig_Environment
-     */
     protected $twig;
-
-    /**
-     * @var array
-     */
     protected $parameters;
 
-    /**
-     * TwigSwiftMailer constructor.
-     *
-     * @param \Swift_Mailer         $mailer
-     * @param UrlGeneratorInterface $router
-     * @param \Twig_Environment     $twig
-     * @param array                 $parameters
-     */
     public function __construct(\Swift_Mailer $mailer, UrlGeneratorInterface $router, \Twig_Environment $twig, array $parameters)
     {
         $this->mailer = $mailer;
@@ -55,9 +32,6 @@ class TwigSwiftMailer implements MailerInterface
         $this->parameters = $parameters;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function sendConfirmationEmailMessage(UserInterface $user)
     {
         $template = $this->parameters['template']['confirmation'];
@@ -65,15 +39,12 @@ class TwigSwiftMailer implements MailerInterface
 
         $context = array(
             'user' => $user,
-            'confirmationUrl' => $url,
+            'confirmationUrl' => $url
         );
 
-        $this->sendMessage($template, $context, $this->parameters['from_email']['confirmation'], (string) $user->getEmail());
+        $this->sendMessage($template, $context, $this->parameters['from_email']['confirmation'], $user->getEmail());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function sendResettingEmailMessage(UserInterface $user)
     {
         $template = $this->parameters['template']['resetting'];
@@ -81,16 +52,16 @@ class TwigSwiftMailer implements MailerInterface
 
         $context = array(
             'user' => $user,
-            'confirmationUrl' => $url,
+            'confirmationUrl' => $url
         );
 
-        $this->sendMessage($template, $context, $this->parameters['from_email']['resetting'], (string) $user->getEmail());
+        $this->sendMessage($template, $context, $this->parameters['from_email']['resetting'], $user->getEmail());
     }
 
     /**
      * @param string $templateName
      * @param array  $context
-     * @param array  $fromEmail
+     * @param string $fromEmail
      * @param string $toEmail
      */
     protected function sendMessage($templateName, $context, $fromEmail, $toEmail)

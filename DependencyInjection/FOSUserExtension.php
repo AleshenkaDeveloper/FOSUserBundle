@@ -12,18 +12,15 @@
 namespace FOS\UserBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Processor;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Config\FileLocator;
 
 class FOSUserExtension extends Extension
 {
-    /**
-     * @var array
-     */
     private static $doctrineDrivers = array(
         'orm' => array(
             'registry' => 'doctrine',
@@ -40,9 +37,6 @@ class FOSUserExtension extends Extension
         ),
     );
 
-    /**
-     * {@inheritdoc}
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $processor = new Processor();
@@ -59,17 +53,35 @@ class FOSUserExtension extends Extension
             } else {
                 $loader->load(sprintf('%s.xml', $config['db_driver']));
             }
-            $container->setParameter($this->getAlias().'.backend_type_'.$config['db_driver'], true);
+            $container->setParameter($this->getAlias() . '.backend_type_' . $config['db_driver'], true);
         }
 
+        // Configure the factory for both Symfony 2.3 and 2.6+
         if (isset(self::$doctrineDrivers[$config['db_driver']])) {
             $definition = $container->getDefinition('fos_user.object_manager');
-            $definition->setFactory(array(new Reference('fos_user.doctrine_registry'), 'getManager'));
+            if (method_exists($definition, 'setFactory')) {
+                $definition->setFactory(array(new Reference('fos_user.doctrine_registry'), 'getManager'));
+            } else {
+                $definition->setFactoryService('fos_user.doctrine_registry');
+                $definition->setFactoryMethod('getManager');
+            }
         }
 
         foreach (array('validator', 'security', 'util', 'mailer', 'listeners') as $basename) {
             $loader->load(sprintf('%s.xml', $basename));
         }
+
+        // Set the SecurityContext for Symfony <2.6
+        // Should go back to simple xml configuration after <2.6 support
+        if (interface_exists('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface')) {
+            $tokenStorageReference = new Reference('security.token_storage');
+        } else {
+            $tokenStorageReference = new Reference('security.context');
+        }
+        $container
+            ->getDefinition('fos_user.security.login_manager')
+            ->replaceArgument(0, $tokenStorageReference)
+        ;
 
         if ($config['use_flash_notifications']) {
             $loader->load('flash_notifications.xml');
@@ -94,7 +106,7 @@ class FOSUserExtension extends Extension
         }
 
         $this->remapParametersNamespaces($config, $container, array(
-            '' => array(
+            ''          => array(
                 'db_driver' => 'fos_user.storage',
                 'firewall_name' => 'fos_user.firewall_name',
                 'model_manager_name' => 'fos_user.model_manager_name',
@@ -123,11 +135,6 @@ class FOSUserExtension extends Extension
         }
     }
 
-    /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param XmlFileLoader    $loader
-     */
     private function loadProfile(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
         $loader->load('profile.xml');
@@ -137,12 +144,6 @@ class FOSUserExtension extends Extension
         ));
     }
 
-    /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param XmlFileLoader    $loader
-     * @param array            $fromEmail
-     */
     private function loadRegistration(array $config, ContainerBuilder $container, XmlFileLoader $loader, array $fromEmail)
     {
         $loader->load('registration.xml');
@@ -164,11 +165,6 @@ class FOSUserExtension extends Extension
         ));
     }
 
-    /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param XmlFileLoader    $loader
-     */
     private function loadChangePassword(array $config, ContainerBuilder $container, XmlFileLoader $loader)
     {
         $loader->load('change_password.xml');
@@ -178,12 +174,6 @@ class FOSUserExtension extends Extension
         ));
     }
 
-    /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param XmlFileLoader    $loader
-     * @param array            $fromEmail
-     */
     private function loadResetting(array $config, ContainerBuilder $container, XmlFileLoader $loader, array $fromEmail)
     {
         $loader->load('resetting.xml');
@@ -196,7 +186,7 @@ class FOSUserExtension extends Extension
         $container->setParameter('fos_user.resetting.email.from_email', array($fromEmail['address'] => $fromEmail['sender_name']));
 
         $this->remapParametersNamespaces($config, $container, array(
-            '' => array(
+            '' => array (
                 'token_ttl' => 'fos_user.resetting.token_ttl',
             ),
             'email' => 'fos_user.resetting.email.%s',
@@ -204,12 +194,6 @@ class FOSUserExtension extends Extension
         ));
     }
 
-    /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param XmlFileLoader    $loader
-     * @param string           $dbDriver
-     */
     private function loadGroups(array $config, ContainerBuilder $container, XmlFileLoader $loader, $dbDriver)
     {
         $loader->load('group.xml');
@@ -231,11 +215,6 @@ class FOSUserExtension extends Extension
         ));
     }
 
-    /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param array            $map
-     */
     protected function remapParameters(array $config, ContainerBuilder $container, array $map)
     {
         foreach ($map as $name => $paramName) {
@@ -245,11 +224,6 @@ class FOSUserExtension extends Extension
         }
     }
 
-    /**
-     * @param array            $config
-     * @param ContainerBuilder $container
-     * @param array            $namespaces
-     */
     protected function remapParametersNamespaces(array $config, ContainerBuilder $container, array $namespaces)
     {
         foreach ($namespaces as $ns => $map) {
@@ -271,9 +245,6 @@ class FOSUserExtension extends Extension
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getNamespace()
     {
         return 'http://friendsofsymfony.github.io/schema/dic/user';

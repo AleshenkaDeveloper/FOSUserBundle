@@ -12,12 +12,12 @@
 namespace FOS\UserBundle\DependencyInjection;
 
 use FOS\UserBundle\Util\LegacyFormHelper;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * This class contains the configuration information for the bundle.
+ * This class contains the configuration information for the bundle
  *
  * This information is solely responsible for how the different configuration
  * sections are normalized, and merged.
@@ -27,14 +27,16 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * {@inheritdoc}
+     * Generates the configuration tree.
+     *
+     * @return TreeBuilder
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('fos_user');
 
-        $supportedDrivers = array('orm', 'mongodb', 'couchdb', 'custom');
+        $supportedDrivers = array('orm', 'mongodb', 'couchdb', 'propel', 'custom');
 
         $rootNode
             ->children()
@@ -63,15 +65,11 @@ class Configuration implements ConfigurationInterface
             ->end()
             // Using the custom driver requires changing the manager services
             ->validate()
-                ->ifTrue(function ($v) {
-                    return 'custom' === $v['db_driver'] && 'fos_user.user_manager.default' === $v['service']['user_manager'];
-                })
+                ->ifTrue(function($v){return 'custom' === $v['db_driver'] && 'fos_user.user_manager.default' === $v['service']['user_manager'];})
                 ->thenInvalid('You need to specify your own user manager service when using the "custom" driver.')
             ->end()
             ->validate()
-                ->ifTrue(function ($v) {
-                    return 'custom' === $v['db_driver'] && !empty($v['group']) && 'fos_user.group_manager.default' === $v['group']['group_manager'];
-                })
+                ->ifTrue(function($v){return 'custom' === $v['db_driver'] && !empty($v['group']) && 'fos_user.group_manager.default' === $v['group']['group_manager'];})
                 ->thenInvalid('You need to specify your own group manager service when using the "custom" driver.')
             ->end();
 
@@ -85,9 +83,6 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    /**
-     * @param ArrayNodeDefinition $node
-     */
     private function addProfileSection(ArrayNodeDefinition $node)
     {
         $node
@@ -113,9 +108,6 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    /**
-     * @param ArrayNodeDefinition $node
-     */
     private function addRegistrationSection(ArrayNodeDefinition $node)
     {
         $node
@@ -154,9 +146,6 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    /**
-     * @param ArrayNodeDefinition $node
-     */
     private function addResettingSection(ArrayNodeDefinition $node)
     {
         $node
@@ -195,9 +184,6 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    /**
-     * @param ArrayNodeDefinition $node
-     */
     private function addChangePasswordSection(ArrayNodeDefinition $node)
     {
         $node
@@ -222,9 +208,6 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    /**
-     * @param ArrayNodeDefinition $node
-     */
     private function addServiceSection(ArrayNodeDefinition $node)
     {
         $node
@@ -244,9 +227,6 @@ class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    /**
-     * @param ArrayNodeDefinition $node
-     */
     private function addGroupSection(ArrayNodeDefinition $node)
     {
         $node

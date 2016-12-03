@@ -15,23 +15,30 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\CouchDB\Event;
 use Doctrine\ODM\CouchDB\Event\LifecycleEventArgs;
 use FOS\UserBundle\Model\UserInterface;
-use FOS\UserBundle\Util\CanonicalFieldsUpdater;
-use FOS\UserBundle\Util\PasswordUpdaterInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UserListener implements EventSubscriber
 {
-    private $passwordUpdater;
-    private $canonicalFieldsUpdater;
-
-    public function __construct(PasswordUpdaterInterface $passwordUpdater, CanonicalFieldsUpdater $canonicalFieldsUpdater)
-    {
-        $this->passwordUpdater = $passwordUpdater;
-        $this->canonicalFieldsUpdater = $canonicalFieldsUpdater;
-    }
+    /**
+     * @var \FOS\UserBundle\Model\UserManagerInterface
+     */
+    private $userManager;
 
     /**
-     * {@inheritdoc}
+     * @var ContainerInterface
      */
+    private $container;
+
+    /**
+     * Constructor
+     *
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     public function getSubscribedEvents()
     {
         return array(
@@ -69,7 +76,11 @@ class UserListener implements EventSubscriber
      */
     private function updateUserFields(UserInterface $user)
     {
-        $this->canonicalFieldsUpdater->updateCanonicalFields($user);
-        $this->passwordUpdater->hashPassword($user);
+        if (null === $this->userManager) {
+            $this->userManager = $this->container->get('fos_user.user_manager');
+        }
+
+        $this->userManager->updateCanonicalFields($user);
+        $this->userManager->updatePassword($user);
     }
 }
