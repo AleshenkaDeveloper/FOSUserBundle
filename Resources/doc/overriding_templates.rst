@@ -65,6 +65,8 @@ to override the one provided by the bundle.
 
 .. code-block:: html+jinja
 
+    {% extends 'layout.html.twig' %}
+
     {% block title %}Demo Application{% endblock %}
 
     {% block content %}
@@ -105,7 +107,6 @@ class.
 
 .. code-block:: php
 
-    <?php
     // src/Acme/UserBundle/AcmeUserBundle.php
 
     namespace Acme\UserBundle;
